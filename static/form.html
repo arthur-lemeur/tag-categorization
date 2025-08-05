@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <title>Test FastAPI Prediction</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js"></script>
+</head>
+
+<body style="text-align: center; line-height: 2;">
+    <h1 style="margin: 50px 0;">Formulaire de prédiction des tags</h1>
+
+    <div style="display: flex; gap: 40px; align-items: center; justify-content: space-around; flex-wrap: wrap;">
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <form id="predictionForm"
+                style="display: flex; gap: 20px; flex-direction: column; align-items: center; justify-content: center; background-color: #F48024; border-radius: 10px; color: white; width: fit-content; padding: 20px;">
+                <div style="display: flex; flex-direction: column; align-items: start;">
+                    <label for="title" style="font-size: 24px;">Title:</label>
+                    <input type="text" id="title" name="Title" required
+                        style="width: 500px; border-radius: 4px; border: none; height: 30px;">
+                </div>
+
+                <div style="display: flex; flex-direction: column; align-items: start;">
+                    <label for="body" style="font-size: 24px;">Body:</label>
+                    <textarea id="body" name="Body" rows="6" cols="60" required
+                        style="width: 500px; border-radius: 4px; border: none;"></textarea>
+                </div>
+
+                <button type="submit" style="border-radius: 6px; height: 25px;">Submit</button>
+            </form>
+
+            <h2>Résultats :</h2>
+            <pre id="result"></pre>
+
+            <div id="loader" class="hidden"></div>
+            <details>
+                <summary>Afficher les probabilités</summary>
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Tag</th>
+                            <th scope="col">Probabilité</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_body">
+                    </tbody>
+                </table>
+            </details>
+        </div>
+
+        <div class="info-section">
+            <h2 id="model_infos_title"></h2>
+            <p id="model_infos_id"></p>
+            <div id="metrics_container" class="loading">Chargement...</div>
+        </div>
+    </div>
+</body>
+
+</html>
