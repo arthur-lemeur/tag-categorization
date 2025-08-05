@@ -4,3 +4,17 @@ mlflow
 scikit-learn
 pandas
 pydantic
+nltk
+mlflow
+joblib
+fastapi 
+pydantic
+bs4
+re
+warnings
+numpy
+typing
+unicodedata
+webbrowser
+threading
+time
