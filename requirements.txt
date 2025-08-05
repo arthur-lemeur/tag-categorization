@@ -10,11 +10,4 @@ joblib
 fastapi 
 pydantic
 bs4
-re
-warnings
 numpy
-typing
-unicodedata
-webbrowser
-threading
-time
