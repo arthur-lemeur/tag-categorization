@@ -34,6 +34,7 @@ warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning)
 # nltk.download('stopwords', download_dir='./nltk_data')
 # nltk.download('punkt_tab', download_dir='./nltk_data')
 # nltk.download('averaged_perceptron_tagger', download_dir='./nltk_data')
+# nltk.download('averaged_perceptron_tagger_eng', download_dir='./nltk_data')
 # nltk.download('wordnet', download_dir='./nltk_data')
 
 # run_id = "e8376fe71c9e4e468f75ab4c0821bb74"
