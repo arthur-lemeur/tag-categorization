@@ -3,9 +3,11 @@ const result = document.getElementById('result');
 const table = document.getElementById('table_body');
 const loader = document.getElementById('loader');
 
+const API_URL = "https://tag-categorization.onrender.com/"
+
 async function loadModelInfo() {
     try {
-        const response = await fetch('http://localhost:8000/model/infos', {
+        const response = await fetch(`${API_URL}/model/infos`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -46,7 +48,7 @@ form.addEventListener('submit', async (e) => {
     loader.classList.remove('hidden');
 
     try {
-        const response = await fetch('http://localhost:8000/predict', {
+        const response = await fetch(`${API_URL}/predict`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ Title: title, Body: body })
