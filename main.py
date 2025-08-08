@@ -5,7 +5,6 @@ import pandas as pd
 import joblib
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import uvicorn
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -20,9 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import unicodedata
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-import webbrowser
-import threading
-import time
+import os
 
 warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning)
 
@@ -57,6 +54,9 @@ class TagProbabilityInput(BaseModel):
 client = MlflowClient()
 most_used_tags_df = pd.read_csv("data/most_used_tags_20.csv", encoding='utf-8')
 TAGS_LIST = most_used_tags_df["Word"].tolist()
+run_id = "e8376fe71c9e4e468f75ab4c0821bb74"
+model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
+joblib.dump(model, 'model.pkl')
 
 app = FastAPI(title="Tag Prediction API")
 
@@ -76,33 +76,61 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def read_index():
     return FileResponse('static/form.html')  # Remplacez par le nom de votre fichier
 
-# Fonction pour ouvrir le navigateur automatiquement
-def open_browser():
-    time.sleep(1.5)  # Attendre que le serveur soit prêt
-    webbrowser.open('http://localhost:8000')
+# # Fonction pour ouvrir le navigateur automatiquement
+# def open_browser():
+#     time.sleep(1.5)  # Attendre que le serveur soit prêt
+#     webbrowser.open('http://localhost:8000')
 
-# Au démarrage de l'application
-@app.on_event("startup")
-async def startup_event():
-    # Lancer l'ouverture du navigateur dans un thread séparé
-    threading.Thread(target=open_browser, daemon=True).start()
+# # Au démarrage de l'application
+# @app.on_event("startup")
+# async def startup_event():
+#     # Lancer l'ouverture du navigateur dans un thread séparé
+#     threading.Thread(target=open_browser, daemon=True).start()
 
 # Charger le modèle ET le vectorizer
 def load_model_and_vectorizer():
     try:
-        # Charger le modèle Random Forest depuis MLflow
-        run_id = "e8376fe71c9e4e468f75ab4c0821bb74"
-        model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
+        # Vérifier si les fichiers existent
+        model_path = 'model.pkl'  # ou le nom de votre fichier de modèle
+        vectorizer_path = 'tfidf_vectorizer_corrected.pkl'
         
-        # Charger le vectorizer TF-IDF
-        vectorizer = joblib.load('tfidf_vectorizer_corrected.pkl')
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Modèle non trouvé: {model_path}")
         
+        if not os.path.exists(vectorizer_path):
+            raise FileNotFoundError(f"Vectorizer non trouvé: {vectorizer_path}")
+        
+        # Charger les fichiers
+        model = joblib.load(model_path)
+        vectorizer = joblib.load(vectorizer_path)
+        
+        print("Modèle et vectorizer chargés avec succès")
         return model, vectorizer
+        
     except Exception as e:
         print(f"Erreur lors du chargement: {e}")
-        raise HTTPException(status_code=500, detail="Modèle ou vectorizer non disponible")
+        raise HTTPException(status_code=500, detail=f"Erreur de chargement: {str(e)}")
 
-model, vectorizer = load_model_and_vectorizer()
+# Charger seulement si les fichiers existent
+model, vectorizer = None, None
+
+@app.on_event("startup")
+async def startup_event():
+    global model, vectorizer
+    try:
+        model, vectorizer = load_model_and_vectorizer()
+    except Exception as e:
+        print(f"Modèles non disponibles: {e}")
+        # L'app démarre quand même, mais sans ML
+
+# Route de test pour vérifier le statut
+@app.get("/api/status")
+async def get_status():
+    return {
+        "model_loaded": model is not None,
+        "vectorizer_loaded": vectorizer is not None,
+        "status": "ready" if (model and vectorizer) else "models_missing"
+    }
 
 lemmatizer = WordNetLemmatizer()
 sw = set(stopwords.words('english'))
