@@ -20,6 +20,7 @@ import unicodedata
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
+import json
 
 warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning)
 
@@ -54,9 +55,24 @@ class TagProbabilityInput(BaseModel):
 client = MlflowClient()
 most_used_tags_df = pd.read_csv("data/most_used_tags_20.csv", encoding='utf-8')
 TAGS_LIST = most_used_tags_df["Word"].tolist()
-run_id = "e8376fe71c9e4e468f75ab4c0821bb74"
-model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
-joblib.dump(model, 'model.pkl')
+
+# run_id = "e8376fe71c9e4e468f75ab4c0821bb74"
+# model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
+# joblib.dump(model, 'model.pkl')
+
+# client = mlflow.tracking.MlflowClient()
+# run = client.get_run(run_id)
+
+# infos = {
+#     "model_type": "Logistic Regression",
+#     "run_id": run_id,
+#     "performance": run.data.metrics,
+#     "hyperparameters": run.data.params,
+#     "tags": run.data.tags
+# }
+
+# with open("model_infos.json", "w") as f:
+#     json.dump(infos, f)
 
 app = FastAPI(title="Tag Prediction API")
 
@@ -291,50 +307,9 @@ def predict(input_data: PredictionInput):
 
 @app.get("/model/infos")
 def get_complete_model_info():
-    """Endpoint avec toutes les informations possibles"""
     try:
-        run_id = "e8376fe71c9e4e468f75ab4c0821bb74" #"1e5bff52bece4e71a9fb4f862d1d1c73"
-        run = client.get_run(run_id)
-        
-        # Informations complètes
-        complete_info = {
-            # Informations de base
-            "model_type": "Logistic Regression",
-            "run_id": run_id,
-            
-            # Informations vectorizer
-            "vectorizer": {
-                "features": len(vectorizer.get_feature_names_out()),
-                "min_df": vectorizer.min_df,
-                "vocabulary_size": len(vectorizer.vocabulary_) if hasattr(vectorizer, 'vocabulary_') else "N/A"
-            },
-            
-            # Informations modèle
-            "model": {
-                "n_features": model.n_features_in_ if hasattr(model, 'n_features_in_') else "N/A",
-                "type": str(type(model).__name__)
-            },
-            
-            # Métriques MLflow
-            "performance": run.data.metrics,
-            
-            # Hyperparamètres
-            "hyperparameters": run.data.params,
-            
-            # Informations sur le run
-            "training_info": {
-                "status": run.info.status,
-                "start_time": run.info.start_time,
-                "end_time": run.info.end_time,
-                "artifact_uri": run.info.artifact_uri,
-                "experiment_id": run.info.experiment_id
-            },
-            
-            # Tags du run (si disponibles)
-            "tags": run.data.tags if hasattr(run.data, 'tags') else {}
-        }
-        
-        return complete_info
-        
+        with open("model_infos.json", "r") as f:
+            infos = json.load(f)
+        return infos
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
