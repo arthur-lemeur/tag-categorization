@@ -3,7 +3,7 @@ const result = document.getElementById('result');
 const table = document.getElementById('table_body');
 const loader = document.getElementById('loader');
 
-const API_URL = "https://tag-categorization.onrender.com/"
+const API_URL = "https://tag-categorization.onrender.com"
 
 async function loadModelInfo() {
     try {
