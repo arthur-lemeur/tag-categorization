@@ -27,13 +27,51 @@ warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning)
 # Launch: 
 # uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
+########
+# DEV
+
+# nltk.download('punkt', download_dir='./nltk_data')
+# nltk.download('stopwords', download_dir='./nltk_data')
+# nltk.download('punkt_tab', download_dir='./nltk_data')
+# nltk.download('averaged_perceptron_tagger', download_dir='./nltk_data')
+# nltk.download('wordnet', download_dir='./nltk_data')
+
+# run_id = "e8376fe71c9e4e468f75ab4c0821bb74"
+# model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
+# joblib.dump(model, 'model.pkl')
+
+# client = mlflow.tracking.MlflowClient()
+# run = client.get_run(run_id)
+
+# infos = {
+#     "model_type": "Logistic Regression",
+#     "run_id": run_id,
+#     "performance": run.data.metrics,
+#     "hyperparameters": run.data.params,
+#     "tags": run.data.tags
+# }
+
+# with open("model_infos.json", "w") as f:
+#     json.dump(infos, f)
+
+
+# # Fonction pour ouvrir le navigateur automatiquement
+# def open_browser():
+#     time.sleep(1.5)  # Attendre que le serveur soit prêt
+#     webbrowser.open('http://localhost:8000')
+
+# # Au démarrage de l'application
+# @app.on_event("startup")
+# async def startup_event():
+#     # Lancer l'ouverture du navigateur dans un thread séparé
+#     threading.Thread(target=open_browser, daemon=True).start()
+
+########
+
 def initialize_nltk():
-    required_data = ['punkt', 'stopwords', 'averaged_perceptron_tagger', 'wordnet']
-    for data in required_data:
-        try:
-            nltk.data.find(f'tokenizers/{data}')
-        except LookupError:
-            nltk.download(data, quiet=True)
+    nltk_data_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
+    if nltk_data_path not in nltk.data.path:
+        nltk.data.path.append(nltk_data_path)
 
 initialize_nltk()
 
@@ -56,24 +94,6 @@ client = MlflowClient()
 most_used_tags_df = pd.read_csv("data/most_used_tags_20.csv", encoding='utf-8')
 TAGS_LIST = most_used_tags_df["Word"].tolist()
 
-# run_id = "e8376fe71c9e4e468f75ab4c0821bb74"
-# model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
-# joblib.dump(model, 'model.pkl')
-
-# client = mlflow.tracking.MlflowClient()
-# run = client.get_run(run_id)
-
-# infos = {
-#     "model_type": "Logistic Regression",
-#     "run_id": run_id,
-#     "performance": run.data.metrics,
-#     "hyperparameters": run.data.params,
-#     "tags": run.data.tags
-# }
-
-# with open("model_infos.json", "w") as f:
-#     json.dump(infos, f)
-
 app = FastAPI(title="Tag Prediction API")
 
 app.add_middleware(
@@ -91,17 +111,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def read_index():
     return FileResponse('static/form.html')  # Remplacez par le nom de votre fichier
-
-# # Fonction pour ouvrir le navigateur automatiquement
-# def open_browser():
-#     time.sleep(1.5)  # Attendre que le serveur soit prêt
-#     webbrowser.open('http://localhost:8000')
-
-# # Au démarrage de l'application
-# @app.on_event("startup")
-# async def startup_event():
-#     # Lancer l'ouverture du navigateur dans un thread séparé
-#     threading.Thread(target=open_browser, daemon=True).start()
 
 # Charger le modèle ET le vectorizer
 def load_model_and_vectorizer():
