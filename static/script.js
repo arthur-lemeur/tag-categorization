@@ -105,7 +105,7 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
-    function createHorizontalBarCharts(metricsData) {
+function createHorizontalBarCharts(metricsData) {
     const container = document.createElement('div');
     
     // Titre du graphique
