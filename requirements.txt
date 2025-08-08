@@ -11,3 +11,4 @@ fastapi
 pydantic
 bs4
 numpy
+lxml
