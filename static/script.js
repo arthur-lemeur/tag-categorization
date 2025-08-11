@@ -4,6 +4,7 @@ const table = document.getElementById('table_body');
 const loader = document.getElementById('loader');
 
 const API_URL = "https://tag-categorization.onrender.com"
+// const API_URL = "http://127.0.0.1:8000";
 
 async function loadModelInfo() {
     try {
