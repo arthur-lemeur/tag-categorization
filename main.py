@@ -75,7 +75,7 @@ warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning)
 ########
 
 def initialize_nltk():
-    nltk_data_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
+    nltk_data_path = os.path.join(os.path.dirname(__file__), 'data/nltk_data')
     if nltk_data_path not in nltk.data.path:
         nltk.data.path.append(nltk_data_path)
 
@@ -97,7 +97,7 @@ class TagProbabilityInput(BaseModel):
     tag: str
 
 client = MlflowClient()
-most_used_tags_df = pd.read_csv("data/most_used_tags_20.csv", encoding='utf-8')
+most_used_tags_df = pd.read_csv("data/dataframes/most_used_tags_20.csv", encoding='utf-8')
 TAGS_LIST = most_used_tags_df["Word"].tolist()
 
 app = FastAPI(title="Tag Prediction API")

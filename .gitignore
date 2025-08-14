@@ -1,0 +1,42 @@
+cours/
+env/
+Catégorisez automatiquement des questions - OpenClassrooms.pdf
+mlruns/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# pytest cache
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment files
+.env
+*.env
+
+# Virtual environment
+venv/
+env/
+
+# Logs
+*.log
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Node modules (if applicable)
+node_modules/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Git-specific files
+*.swp
+*.swo
