@@ -116,14 +116,18 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Route pour servir votre page HTML principale
 @app.get("/")
 async def read_index():
-    return FileResponse('static/form.html')  # Remplacez par le nom de votre fichier
+    return FileResponse('static/form.html')
+
+@app.get("/api")
+async def hello_api():
+    return {"message": "Hello World!"}
 
 # Charger le modèle ET le vectorizer
 def load_model_and_vectorizer():
     try:
         # Vérifier si les fichiers existent
-        model_path = 'model.pkl'  # ou le nom de votre fichier de modèle
-        vectorizer_path = 'tfidf_vectorizer_corrected.pkl'
+        model_path = 'model.pkl'
+        vectorizer_path = 'tfidf_vectorizer_final.pkl'
         
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Modèle non trouvé: {model_path}")
@@ -267,10 +271,6 @@ def process_text(text, remove_stopwords=True):
     
     return ' '.join(tokens)
 
-@app.get("/")
-def read_root():
-    return {"message": "Tag Prediction API"}
-
 @app.post("/predict", response_model=PredictionOutput)
 def predict(input_data: PredictionInput):
     try:
@@ -318,6 +318,8 @@ def predict(input_data: PredictionInput):
             )
         
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/model/infos")

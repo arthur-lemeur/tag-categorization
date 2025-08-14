@@ -13,3 +13,5 @@ bs4
 numpy
 lxml
 pytest>=7.0.0
+flask
+api
