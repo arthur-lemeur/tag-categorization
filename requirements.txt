@@ -12,3 +12,4 @@ pydantic
 bs4
 numpy
 lxml
+pytest>=7.0.0
